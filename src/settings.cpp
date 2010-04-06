@@ -109,7 +109,8 @@ std::wstring Settings::DoGetVerInfoField(const wchar_t *field, bool fatal)
 
     TCHAR *value;
     UINT len;
-    if ( !VerQueryValue(fi.data, key.c_str(), (LPVOID*)&value, &len) )
+	// LPWSTR explicit cast required below to compile without error in Visual Studio 2005.
+    if ( !VerQueryValue(fi.data, (LPWSTR)key.c_str(), (LPVOID*)&value, &len) )
     {
         if ( fatal )
             throw Win32Exception("Executable doesn't have required key in StringFileInfo");
