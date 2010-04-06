@@ -113,6 +113,17 @@ WIN_SPARKLE_API void win_sparkle_set_appcast_url(const char *url)
     CATCH_ALL_EXCEPTIONS
 }
 
+WIN_SPARKLE_API void win_sparkle_set_app_details(const char *companyname, const char *appname, const char *appversion)
+{
+    try
+    {
+        Settings::SetCompanyName(companyname);
+        Settings::SetAppName(appname);
+        Settings::SetAppVersion(appversion);
+    }
+    CATCH_ALL_EXCEPTIONS
+}
+
 
 /*--------------------------------------------------------------------------*
                               Manual usage

@@ -73,6 +73,29 @@ public:
     /// Set appcast location
     static void SetAppcastURL(const char *url) { ms_appcastURL = url; }
 
+    /// Set company name
+    static void SetCompanyName(const char *name)
+	{
+		std::string temp = name;
+		ms_companyName.assign(temp.begin(), temp.end());
+		//ms_companyName = winsparkle::AnsiToWide(name);
+	}
+
+	/// Set application name
+    static void SetAppName(const char *name) {
+		std::string temp = name;
+		ms_appName.assign(temp.begin(), temp.end());
+		//ms_appName = winsparkle::AnsiToWide(name);
+	}
+
+	/// Set application version
+    static void SetAppVersion(const char *version) {
+		std::string temp = version;
+		ms_appVersion.assign(temp.begin(), temp.end());
+		//ms_appVersion = winsparkle::AnsiToWide(version);
+	}
+
+
     /**
         Access to runtime configuration.
 
@@ -132,6 +155,9 @@ private:
 
 private:
     static std::string ms_appcastURL;
+    static std::wstring ms_companyName;
+    static std::wstring ms_appName;
+    static std::wstring ms_appVersion;
 };
 
 } // namespace winsparkle

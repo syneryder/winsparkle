@@ -34,6 +34,9 @@ namespace winsparkle
 {
 
 std::string Settings::ms_appcastURL;
+std::wstring Settings::ms_companyName;
+std::wstring Settings::ms_appName;
+std::wstring Settings::ms_appVersion;
 
 
 /*--------------------------------------------------------------------------*
