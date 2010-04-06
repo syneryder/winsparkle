@@ -51,15 +51,24 @@ public:
 
     /// Return application name
     static std::wstring GetAppName()
-        { return GetVerInfoField(L"ProductName"); }
+	{
+	  if (ms_appName.length() > 0) return ms_appName;
+	  return GetVerInfoField(L"ProductName");
+    }
 
     /// Return (human-readable) application version
-    static std::wstring GetAppVersion()
-        { return GetVerInfoField(L"ProductVersion"); }
+	static std::wstring GetAppVersion()
+	{
+	    if (ms_appVersion.length() > 0) return ms_appVersion;
+        return GetVerInfoField(L"ProductVersion");
+	}
 
     /// Return name of the vendor
     static std::wstring GetCompanyName()
-        { return GetVerInfoField(L"CompanyName"); }
+	{
+	    if (ms_companyName.length() > 0) return ms_companyName;
+        return GetVerInfoField(L"CompanyName");
+	}
 
     /// Set appcast location
     static void SetAppcastURL(const char *url) { ms_appcastURL = url; }
