@@ -128,7 +128,7 @@ protected:
 WinSparkleDialog::WinSparkleDialog()
     : wxDialog(NULL, wxID_ANY, _("Software Update"),
                wxDefaultPosition, wxDefaultSize,
-               wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+               wxDEFAULT_DIALOG_STYLE)
 {
     SetIcons(wxICON(UpdateAvailable));
 
