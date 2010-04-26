@@ -103,7 +103,6 @@ WIN_SPARKLE_API void win_sparkle_cleanup();
     @param url  URL of the appcast.
  */
 WIN_SPARKLE_API void win_sparkle_set_appcast_url(const char *url);
-WIN_SPARKLE_API void win_sparkle_set_app_details(const char *companyname, const char *appname, const char *version);
 
 /**
     Sets application metadata.

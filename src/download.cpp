@@ -107,17 +107,11 @@ void DownloadFile(const std::string& url, IDownloadSink *sink, int flags)
         if ( !InternetReadFile(conn, buffer, 1024, &read) )
             throw Win32Exception();
 
-		if ( read == 0 ) {
-			// All of the file was downloaded, but now we need to
-			// delete the file from Internet Explorer's cache,
-			// at least on Windows 2000 systems.
-			DeleteUrlCacheEntryA(url.c_str());
+        if ( read == 0 )
             break; // all of the file was downloaded
-		}
 
         sink->Add(buffer, read);
     }
-	
 }
 
 } // namespace winsparkle
