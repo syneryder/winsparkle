@@ -26,9 +26,11 @@
 #ifndef _winsparkle_h_
 #define _winsparkle_h_
 
+#include <stddef.h>
+
 #include "winsparkle-version.h"
 
-#if !BUILDING_WIN_SPARKLE && defined(_MSC_VER)
+#if !defined(BUILDING_WIN_SPARKLE) && defined(_MSC_VER)
 #pragma comment(lib, "WinSparkle.lib")
 #endif
 
@@ -83,8 +85,7 @@ WIN_SPARKLE_API void win_sparkle_cleanup();
     Functions for setting up WinSparkle.
 
     All functions in this category can only be called @em before the first
-    call to win_sparkle_init()! Additionally, they aren't MT-safe and cannot
-    be called in parallel.
+    call to win_sparkle_init()!
 
     Typically, the application would configure WinSparkle on startup and then
     call win_sparkle_init(), all from its main thread.
@@ -96,12 +97,35 @@ WIN_SPARKLE_API void win_sparkle_cleanup();
 
     Only http and https schemes are supported.
 
-    Currently, this function must be called (@todo - get it from resources).
+    If this function isn't called by the app, the URL is obtained from
+    Windows resource named "FeedURL" of type "APPCAST".
 
     @param url  URL of the appcast.
  */
 WIN_SPARKLE_API void win_sparkle_set_appcast_url(const char *url);
 WIN_SPARKLE_API void win_sparkle_set_app_details(const char *companyname, const char *appname, const char *version);
+
+/**
+    Sets application metadata.
+
+    Normally, these are taken from VERSIONINFO/StringFileInfo resources,
+    but if your application doesn't use them for some reason, using this
+    function is an alternative.
+
+    @param company_name  Company name of the vendor.
+    @param app_name      Application name. This is both shown to the user
+                         and used in HTTP User-Agent header.
+    @param app_version   Version of the app, as string (e.g. "1.2" or "1.2rc1").
+
+    @note @a company_name and @a app_name are used to determine the location
+          of WinSparkle settings in registry.
+          (HKCU\Software\<company_name>\<app_name>\WinSparkle is used.)
+
+    @since 0.3.
+ */
+WIN_SPARKLE_API void win_sparkle_set_app_details(const wchar_t *company_name,
+                                                 const wchar_t *app_name,
+                                                 const wchar_t *app_version);
 
 //@}
 

@@ -33,6 +33,7 @@
 namespace winsparkle
 {
 
+CriticalSection Settings::ms_csVars;
 std::string Settings::ms_appcastURL;
 std::wstring Settings::ms_companyName;
 std::wstring Settings::ms_appName;
@@ -109,11 +110,11 @@ std::wstring Settings::DoGetVerInfoField(const wchar_t *field, bool fatal)
 
     const std::wstring key =
         TEXT("\\StringFileInfo\\") + GetVerInfoLang(fi.data) + TEXT("\\") + field;
+    LPTSTR key_str = (LPTSTR)key.c_str(); // explicit cast to work around VC2005 bug
 
     TCHAR *value;
     UINT len;
-	// LPWSTR explicit cast required below to compile without error in Visual Studio 2005.
-    if ( !VerQueryValue(fi.data, (LPWSTR)key.c_str(), (LPVOID*)&value, &len) )
+    if ( !VerQueryValue(fi.data, key_str, (LPVOID*)&value, &len) )
     {
         if ( fatal )
             throw Win32Exception("Executable doesn't have required key in StringFileInfo");
@@ -122,6 +123,37 @@ std::wstring Settings::DoGetVerInfoField(const wchar_t *field, bool fatal)
     }
 
     return value;
+}
+
+
+std::string Settings::GetCustomResource(const char *name, const char *type)
+{
+    const HINSTANCE module = 0; // main executable
+    HRSRC hRes = FindResourceA(module, name, type);
+    if ( hRes )
+    {
+        HGLOBAL hData = LoadResource(module, hRes);
+        if ( hData )
+        {
+            const char *data = (const char*)::LockResource(hData);
+            size_t size = ::SizeofResource(module, hRes);
+
+            if ( data && size )
+            {
+                if ( data[size-1] == '\0' ) // null-terminated string
+                    size--;
+                return std::string(data, size);
+            }
+        }
+    }
+
+    std::string err;
+    err += "Failed to get resource \"";
+    err += name;
+    err += "\" (type \"";
+    err += type;
+    err += "\")";
+    throw Win32Exception(err.c_str());
 }
 
 

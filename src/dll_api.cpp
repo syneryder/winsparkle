@@ -113,13 +113,15 @@ WIN_SPARKLE_API void win_sparkle_set_appcast_url(const char *url)
     CATCH_ALL_EXCEPTIONS
 }
 
-WIN_SPARKLE_API void win_sparkle_set_app_details(const char *companyname, const char *appname, const char *appversion)
+WIN_SPARKLE_API void win_sparkle_set_app_details(const wchar_t *company_name,
+                                                 const wchar_t *app_name,
+                                                 const wchar_t *app_version)
 {
     try
     {
-        Settings::SetCompanyName(companyname);
-        Settings::SetAppName(appname);
-        Settings::SetAppVersion(appversion);
+        Settings::SetCompanyName(company_name);
+        Settings::SetAppName(app_name);
+        Settings::SetAppVersion(app_version);
     }
     CATCH_ALL_EXCEPTIONS
 }
@@ -137,7 +139,7 @@ WIN_SPARKLE_API void win_sparkle_check_update_with_ui()
         UI::ShowCheckingUpdates();
 
         // Then run the actual check in the background.
-        UpdateChecker *check = new UpdateChecker();
+        UpdateChecker *check = new ManualUpdateChecker();
         check->Start();
     }
     CATCH_ALL_EXCEPTIONS

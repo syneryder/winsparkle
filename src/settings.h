@@ -26,6 +26,8 @@
 #ifndef _settings_h_
 #define _settings_h_
 
+#include "threads.h"
+
 #include <string>
 #include <sstream>
 
@@ -46,54 +48,84 @@ namespace winsparkle
 class Settings
 {
 public:
+    /**
+        Getting app metadata.
+     */
+    //@{
+
     /// Get location of the appcast
-    static std::string GetAppcastURL() { return ms_appcastURL; }
+    static std::string GetAppcastURL()
+    {
+        CriticalSectionLocker lock(ms_csVars);
+        if ( ms_appcastURL.empty() )
+            ms_appcastURL = GetCustomResource("FeedURL", "APPCAST");
+        return ms_appcastURL;
+    }
 
     /// Return application name
     static std::wstring GetAppName()
-	{
-	  if (ms_appName.length() > 0) return ms_appName;
-	  return GetVerInfoField(L"ProductName");
+    {
+        CriticalSectionLocker lock(ms_csVars);
+        if ( ms_appName.empty() )
+            ms_appName = GetVerInfoField(L"ProductName");
+        return ms_appName;
     }
 
     /// Return (human-readable) application version
-	static std::wstring GetAppVersion()
-	{
-	    if (ms_appVersion.length() > 0) return ms_appVersion;
-        return GetVerInfoField(L"ProductVersion");
-	}
+    static std::wstring GetAppVersion()
+    {
+        CriticalSectionLocker lock(ms_csVars);
+        if ( ms_appVersion.empty() )
+            ms_appVersion = GetVerInfoField(L"ProductVersion");
+        return ms_appVersion;
+    }
 
     /// Return name of the vendor
     static std::wstring GetCompanyName()
-	{
-	    if (ms_companyName.length() > 0) return ms_companyName;
-        return GetVerInfoField(L"CompanyName");
-	}
+    {
+        CriticalSectionLocker lock(ms_csVars);
+        if ( ms_companyName.empty() )
+            ms_companyName = GetVerInfoField(L"CompanyName");
+        return ms_companyName;
+    }
+    //@}
+
+    /**
+        Overwriting app metadata.
+
+        Normally, they would be retrieved from resources, but it's sometimes
+        necessary to set them manually.
+     */
+    //@{
 
     /// Set appcast location
-    static void SetAppcastURL(const char *url) { ms_appcastURL = url; }
+    static void SetAppcastURL(const char *url)
+    {
+        CriticalSectionLocker lock(ms_csVars);
+        ms_appcastURL = url;
+    }
+
+    /// Set application name
+    static void SetAppName(const wchar_t *name)
+    {
+        CriticalSectionLocker lock(ms_csVars);
+        ms_appName = name;
+    }
+
+    /// Set application version
+    static void SetAppVersion(const wchar_t *version)
+    {
+        CriticalSectionLocker lock(ms_csVars);
+        ms_appVersion = version;
+    }
 
     /// Set company name
-    static void SetCompanyName(const char *name)
-	{
-		std::string temp = name;
-		ms_companyName.assign(temp.begin(), temp.end());
-		//ms_companyName = winsparkle::AnsiToWide(name);
-	}
-
-	/// Set application name
-    static void SetAppName(const char *name) {
-		std::string temp = name;
-		ms_appName.assign(temp.begin(), temp.end());
-		//ms_appName = winsparkle::AnsiToWide(name);
-	}
-
-	/// Set application version
-    static void SetAppVersion(const char *version) {
-		std::string temp = version;
-		ms_appVersion.assign(temp.begin(), temp.end());
-		//ms_appVersion = winsparkle::AnsiToWide(version);
-	}
+    static void SetCompanyName(const wchar_t *name)
+    {
+        CriticalSectionLocker lock(ms_csVars);
+        ms_companyName = name;
+    }
+    //@}
 
 
     /**
@@ -149,12 +181,17 @@ private:
     static std::wstring TryGetVerInfoField(const wchar_t *field)
         { return DoGetVerInfoField(field, false); }
     static std::wstring DoGetVerInfoField(const wchar_t *field, bool fatal);
+    // Gets custom win32 resource data
+    static std::string GetCustomResource(const char *name, const char *type);
 
     static void DoWriteConfigValue(const char *name, const char *value);
     static std::string DoReadConfigValue(const char *name);
 
 private:
-    static std::string ms_appcastURL;
+    // guards the variables below:
+    static CriticalSection ms_csVars;
+
+    static std::string  ms_appcastURL;
     static std::wstring ms_companyName;
     static std::wstring ms_appName;
     static std::wstring ms_appVersion;
