@@ -29,6 +29,7 @@
 #include "error.h"
 #include "ui.h"
 #include "updatechecker.h"
+#include "utils.h"
 
 #include <ctime>
 
@@ -124,6 +125,16 @@ WIN_SPARKLE_API void win_sparkle_set_app_details(const wchar_t *company_name,
         Settings::SetAppVersion(app_version);
     }
     CATCH_ALL_EXCEPTIONS
+}
+
+WIN_SPARKLE_API void win_sparkle_set_app_detailsA(const char *company_name, const char *app_name, const char *app_version)
+{
+	try {
+		Settings::SetCompanyName(AnsiToWide(company_name).c_str());
+		Settings::SetAppName(AnsiToWide(app_name).c_str());
+		Settings::SetAppVersion(AnsiToWide(app_version).c_str());
+	}
+	CATCH_ALL_EXCEPTIONS
 }
 
 WIN_SPARKLE_API void win_sparkle_set_registry_path(const char *path)

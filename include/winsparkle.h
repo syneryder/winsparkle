@@ -127,6 +127,26 @@ WIN_SPARKLE_API void win_sparkle_set_app_details(const wchar_t *company_name,
                                                  const wchar_t *app_version);
 
 /**
+	Sets application metadata (takes ANSI/C-style stings as parameters).
+
+	Normally, these are taken from VERSIONINFO/StringFileInfo resources,
+	but if your application doesn't use them for some reason, using this
+	function is an alternative.
+ 
+	@param company_name  Company name of the vendor.
+	@param app_name      Application name. This is both shown to the user
+                         and used in HTTP User-Agent header.
+	@param app_version   Version of the app, as string (e.g. "1.2" or "1.2rc1").
+ 
+	@note @a company_name and @a app_name are used to determine the location
+          of WinSparkle settings in registry.
+		  (HKCU\Software\<company_name>\<app_name>\WinSparkle is used.) 
+ */
+WIN_SPARKLE_API void win_sparkle_set_app_detailsA(const char *company_name,
+												  const char *app_name,
+												  const char *app_version);
+
+/**
 	 Set the registry path where settings will be stored.
 	 
 	 Normally, these are stored in:
